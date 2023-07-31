@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 const generateId = () => {
   return Math.random() * 10000000;
 };
@@ -65,6 +65,7 @@ const itemSlice = createSlice({
       const currentRow = state.currentItems.find(
         (i) => i.id == action.payload.id
       );
+      console.log(currentRow);
       if (action.payload.keyward == "Tab" && currentRow.id == lastId.id) {
         generateId++;
         state.currentItems.push({
