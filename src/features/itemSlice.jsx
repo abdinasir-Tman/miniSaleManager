@@ -82,6 +82,17 @@ const itemSlice = createSlice({
         console.log("nooo");
       }
     },
+    //Remove Row
+    removeRow: (state, action) => {
+      const currentRow = state.currentItems.findIndex(
+        (i) => i.id == action.payload.id
+      );
+      if (action.payload.keyward == "Backspace" && currentRow != 0) {
+        state.currentItems.splice(currentRow, 1);
+      } else {
+        console.log("nooo");
+      }
+    },
   },
 });
 
@@ -95,4 +106,5 @@ export const {
   MainTotal,
   addRow,
   makeDiscount,
+  removeRow,
 } = itemSlice.actions;

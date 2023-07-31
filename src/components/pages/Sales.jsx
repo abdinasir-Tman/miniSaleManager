@@ -9,6 +9,7 @@ import {
   makeDiscount,
   MainTotal,
   addRow,
+  removeRow,
 } from "../../features/itemSlice";
 
 const Sales = () => {
@@ -118,6 +119,7 @@ const Sales = () => {
                           })
                         )
                       }
+                      onKeyDown={(e) => dispatch(removeRow(it.id))}
                       type="text"
                       className="Input item"
                       name="item"
