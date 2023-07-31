@@ -1,6 +1,6 @@
 import { createSlice, current } from "@reduxjs/toolkit";
 const generateId = () => {
-  return Math.random() * 10000000;
+  return Math.floor(Math.random() * 10000000);
 };
 const initialState = {
   items: [],
@@ -66,8 +66,8 @@ const itemSlice = createSlice({
         (i) => i.id == action.payload.id
       );
       console.log(currentRow);
+      console.log(lastId);
       if (action.payload.keyward == "Tab" && currentRow.id == lastId.id) {
-        generateId++;
         state.currentItems.push({
           id: generateId(),
           item: "",
