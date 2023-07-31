@@ -122,7 +122,6 @@ const Sales = () => {
                       className="Input item"
                       name="item"
                       id=""
-                      autoFocus
                       value={it.item}
                     />
                   </td>
