@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 const generateId = () => {
-  return Match.random() * 10000000;
+  return Math.random() * 10000000;
 };
 const initialState = {
   items: [],
