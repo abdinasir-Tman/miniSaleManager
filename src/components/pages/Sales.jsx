@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { FaRegTimesCircle } from "react-icons/fa";
 import {
   updateItemName,
   updateItemPrice,
@@ -61,6 +62,7 @@ const Sales = () => {
       })
     );
   };
+
   return (
     <div className="px-2">
       <h1 className="text-center text-xl mt-2">Invoice</h1>
@@ -107,7 +109,27 @@ const Sales = () => {
             <tbody>
               {currentItems.map((it, index) => (
                 <tr key={it.id}>
-                  <td className="Tbody">{index + 1}</td>
+                  <td
+                    className="Tbody flex gap-2 items-center"
+                    onMouseOver={(e) =>
+                      e.target.firstElementChild.classList.remove("hidden")
+                    }
+                    onMouseLeave={(e) =>
+                      e.target.firstElementChild.classList.add("hidden")
+                    }
+                  >
+                    <span className="px-2 w-full hidden">
+                      <FaRegTimesCircle
+                        onClick={(e) =>
+                          dispatch(
+                            removeRow({ keyward: "Backspace", id: it.id })
+                          )
+                        }
+                        className="text-red-600 cursor-pointer  duration-500 times"
+                      />
+                    </span>
+                    {index + 1}
+                  </td>
                   <td className="Tbody">
                     <input
                       itemID={it.id}
