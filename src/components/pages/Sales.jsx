@@ -119,7 +119,9 @@ const Sales = () => {
                           })
                         )
                       }
-                      onKeyDown={(e) => dispatch(removeRow(it.id))}
+                      onKeyDown={(e) =>
+                        dispatch(removeRow({ keyward: e.key, id: it.id }))
+                      }
                       type="text"
                       className="Input item"
                       name="item"
