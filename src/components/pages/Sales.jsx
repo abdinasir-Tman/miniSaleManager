@@ -105,9 +105,9 @@ const Sales = () => {
               </tr>
             </thead>
             <tbody>
-              {currentItems.map((it) => (
+              {currentItems.map((it, index) => (
                 <tr key={it.id}>
-                  <td className="Tbody">{it.id}</td>
+                  <td className="Tbody">{index++}</td>
                   <td className="Tbody">
                     <input
                       itemID={it.id}

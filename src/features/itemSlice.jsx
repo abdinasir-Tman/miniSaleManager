@@ -1,17 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-
+const generateId = () => {
+  return Match.random() * 10000000;
+};
 const initialState = {
   items: [],
   currentItems: [
     {
-      id: 1,
-      item: "",
-      qty: "",
-      price: "",
-      amount: "",
-    },
-    {
-      id: 2,
+      id: generateId(),
       item: "",
       qty: "",
       price: "",
@@ -71,8 +66,9 @@ const itemSlice = createSlice({
         (i) => i.id == action.payload.id
       );
       if (action.payload.keyward == "Tab" && currentRow.id == lastId.id) {
+        generateId++;
         state.currentItems.push({
-          id: state.currentItems.length + 1,
+          id: generateId(),
           item: "",
           price: "",
           qty: "",
