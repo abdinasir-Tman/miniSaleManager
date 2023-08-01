@@ -11,24 +11,35 @@ import {
   MainTotal,
   addRow,
   removeRow,
+  updateCustId,
+  updateDate,
 } from "../../features/itemSlice";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebase/firebase";
+import { updateInvoicesList } from "../../features/itemsListSlice";
 
 const Sales = () => {
+  //all State
+  const getInvoicesFromFirestore = async () => {
+    try {
+      const invoicesCollection = collection(db, "invoices");
+      const data = await getDocs(invoicesCollection);
+      const invoices = data.docs.map((doc) => doc.data());
+      console.log(invoices);
+      dispatch(updateInvoicesList(invoices));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  useEffect(() => {
+    getInvoicesFromFirestore();
+  }, []);
   const { currentItems, subtotal, discount, total } = useSelector(
     (store) => store.items
   );
 
   const dispatch = useDispatch();
 
-  //updating items to the store
-  // const addItemsToStore = (e) => {
-  //   dispatch(
-  //     updateItem({
-  //       id: e.target.getAttribute("itemID"),
-  //       [e.target.name]: e.target.value,
-  //     })
-  //   );
-  // };
   // Calculate Amount of item and update item amount
   useEffect(() => {
     dispatch(getSubtotal());
@@ -74,6 +85,7 @@ const Sales = () => {
               name="company"
               className="bg-transparent cursor-pointer hover:border"
               id=""
+              onChange={(e) => dispatch(updateCustId(e.target.value))}
             >
               <option value="choose here">Choose here</option>
               <option value="cust001">zakawa</option>
@@ -86,6 +98,7 @@ const Sales = () => {
               type="date"
               className="bg-transparent cursor-pointer hover:border date"
               id=""
+              onChange={(e) => dispatch(updateDate(e.target.value))}
             />
           </div>
         </div>

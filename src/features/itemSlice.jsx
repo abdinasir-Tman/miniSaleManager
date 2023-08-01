@@ -1,9 +1,11 @@
-import { createSlice, current } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 const generateId = () => {
   return Math.floor(Math.random() * 10000000);
 };
+//Initaial of currentItems and invoice items
 const initialState = {
-  items: [],
+  custId: "",
+  date: "",
   currentItems: [
     {
       id: generateId(),
@@ -21,23 +23,34 @@ const itemSlice = createSlice({
   name: "items",
   initialState,
   reducers: {
+    //update Item name
     updateItemName: (state, action) => {
       const gotItem = state.currentItems.find(
         (item) => item.id == action.payload.id
       );
       gotItem.item = action.payload.item;
     },
+    //update Item Price
     updateItemPrice: (state, action) => {
       const gotItem = state.currentItems.find(
         (item) => item.id == action.payload.id
       );
       gotItem.price = action.payload.price;
     },
+    //udpate item qty
     updateItemQty: (state, action) => {
       const gotItem = state.currentItems.find(
         (item) => item.id == action.payload.id
       );
       gotItem.qty = action.payload.qty;
+    },
+    //udpate custId
+    updateCustId: (state, action) => {
+      state.custId = action.payload;
+    },
+    //udpate date
+    updateDate: (state, action) => {
+      state.date = action.payload;
     },
     //calculating amount
     calculateAmount: (state, action) => {
@@ -65,8 +78,7 @@ const itemSlice = createSlice({
       const currentRow = state.currentItems.find(
         (i) => i.id == action.payload.id
       );
-      console.log(currentRow);
-      console.log(lastId);
+
       if (action.payload.keyward == "Tab" && currentRow.id == lastId.id) {
         state.currentItems.push({
           id: generateId(),
@@ -87,7 +99,7 @@ const itemSlice = createSlice({
       if (action.payload.keyward == "Backspace" && currentRow != 0) {
         state.currentItems.splice(currentRow, 1);
       } else {
-        console.log("nooo");
+        return;
       }
     },
   },
@@ -104,4 +116,6 @@ export const {
   addRow,
   makeDiscount,
   removeRow,
+  updateCustId,
+  updateDate,
 } = itemSlice.actions;

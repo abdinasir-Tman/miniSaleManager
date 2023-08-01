@@ -1,6 +1,28 @@
-import React from "react";
+import { useEffect } from "react";
+import { getDocs, collection } from "firebase/firestore";
+import { useDispatch, useSelector } from "react-redux";
+import { db } from "../../firebase/firebase";
+import { getItemsListFromFirebase } from "../../features/itemsFromFireStore";
 
 const Items = () => {
+  const dispatch = useDispatch();
+  const { items } = useSelector((store) => store.allItemsList);
+
+  const getItems = async () => {
+    try {
+      const itemsCollection = collection(db, "items");
+      const data = await getDocs(itemsCollection);
+      const pureData = data.docs.map((doc) => doc.data());
+
+      dispatch(getItemsListFromFirebase(pureData));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  useEffect(() => {
+    getItems();
+  }, []);
+  console.log(items);
   return (
     <div>
       <div className="px-2">
@@ -15,52 +37,19 @@ const Items = () => {
               <th className="Thead">Item Name</th>
               <th className="Thead">Qty</th>
               <th className="Thead"> Price</th>
-              <th className="Thead">Total</th>
+              <th className="Thead">Amount</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td className="Tbody">Hard Disk Drive</td>
-              <td className="Tbody">20</td>
-              <td className="Tbody">30.00</td>
-              <td className="Tbody">600.00</td>
-            </tr>
-            <tr>
-              <td className="Tbody">Hard Disk Drive</td>
-              <td className="Tbody">20</td>
-              <td className="Tbody">30.00</td>
-              <td className="Tbody">600.00</td>
-            </tr>
-            <tr>
-              <td className="Tbody">Hard Disk Drive</td>
-              <td className="Tbody">20</td>
-              <td className="Tbody">30.00</td>
-              <td className="Tbody">600.00</td>
-            </tr>
-            <tr>
-              <td className="Tbody">Hard Disk Drive</td>
-              <td className="Tbody">20</td>
-              <td className="Tbody">30.00</td>
-              <td className="Tbody">600.00</td>
-            </tr>
-            <tr>
-              <td className="Tbody">Hard Disk Drive</td>
-              <td className="Tbody">20</td>
-              <td className="Tbody">30.00</td>
-              <td className="Tbody">600.00</td>
-            </tr>
-            <tr>
-              <td className="Tbody">Hard Disk Drive</td>
-              <td className="Tbody">20</td>
-              <td className="Tbody">30.00</td>
-              <td className="Tbody">600.00</td>
-            </tr>
-            <tr>
-              <td className="Tbody">Hard Disk Drive</td>
-              <td className="Tbody">20</td>
-              <td className="Tbody">30.00</td>
-              <td className="Tbody">600.00</td>
-            </tr>
+            {items?.map((item, i) => (
+              <tr key={i}>
+                {console.log(item)}
+                <td className="Tbody">{item.name}</td>
+                <td className="Tbody">{item.qty}</td>
+                <td className="Tbody">{item.price}</td>
+                <td className="Tbody">{item.price * item.qty}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
