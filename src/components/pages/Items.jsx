@@ -7,7 +7,8 @@ import { getItemsListFromFirebase } from "../../features/itemsFromFireStore";
 const Items = () => {
   const dispatch = useDispatch();
   const { items } = useSelector((store) => store.allItemsList);
-
+  const { invoicesList } = useSelector((store) => store.invoices);
+  //geting items from firestore
   const getItems = async () => {
     try {
       const itemsCollection = collection(db, "items");
@@ -19,10 +20,24 @@ const Items = () => {
       console.error(err);
     }
   };
+
+  //calculate Items in fireStore
+  const calculateItemInFireStore = (id) => {
+    let sum = 0;
+
+    let item = items.find((item) => item.name == id);
+
+    invoicesList.map((invoice) => {
+      invoice.currentItems.map((i) => (sum += Number(i.qty)));
+    });
+
+    return item.qty - sum;
+  };
+
   useEffect(() => {
     getItems();
-  }, []);
-  console.log(items);
+  }, [items, invoicesList]);
+
   return (
     <div>
       <div className="px-2">
@@ -43,9 +58,8 @@ const Items = () => {
           <tbody>
             {items?.map((item, i) => (
               <tr key={i}>
-                {console.log(item)}
                 <td className="Tbody">{item.name}</td>
-                <td className="Tbody">{item.qty}</td>
+                <td className="Tbody">{calculateItemInFireStore(item.name)}</td>
                 <td className="Tbody">{item.price}</td>
                 <td className="Tbody">{item.price * item.qty}</td>
               </tr>

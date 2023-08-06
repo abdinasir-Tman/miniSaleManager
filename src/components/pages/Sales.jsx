@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FaRegTimesCircle } from "react-icons/fa";
 import {
@@ -13,19 +13,22 @@ import {
   removeRow,
   updateCustId,
   updateDate,
+  addToDb,
 } from "../../features/itemSlice";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { updateInvoicesList } from "../../features/itemsListSlice";
 
 const Sales = () => {
+  const itemsFromFireStore = useSelector((store) => store.allItemsList.items);
+  const { invoicesList } = useSelector((store) => store.invoices);
   //all State
   const getInvoicesFromFirestore = async () => {
     try {
       const invoicesCollection = collection(db, "invoices");
       const data = await getDocs(invoicesCollection);
-      const invoices = data.docs.map((doc) => doc.data());
-      console.log(invoices);
+      const invoices = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+
       dispatch(updateInvoicesList(invoices));
     } catch (err) {
       console.error(err);
@@ -33,13 +36,15 @@ const Sales = () => {
   };
   useEffect(() => {
     getInvoicesFromFirestore();
-  }, []);
+  }, [itemsFromFireStore, invoicesList]);
   const { currentItems, subtotal, discount, total } = useSelector(
     (store) => store.items
   );
+  const { items } = useSelector((store) => store.allItemsList);
 
   const dispatch = useDispatch();
-
+  //form ref
+  const formRef = useRef();
   // Calculate Amount of item and update item amount
   useEffect(() => {
     dispatch(getSubtotal());
@@ -73,11 +78,16 @@ const Sales = () => {
       })
     );
   };
-
+  //form ref and submit
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(addToDb());
+    formRef.current.reset();
+  };
   return (
     <div className="px-2">
       <h1 className="text-center text-xl mt-2">Invoice</h1>
-      <form>
+      <form onSubmit={handleSubmit} ref={formRef}>
         <div className="flex justify-between">
           <div className="flex flex-col">
             <label htmlFor="">Customer</label>
@@ -86,6 +96,7 @@ const Sales = () => {
               className="bg-transparent cursor-pointer hover:border"
               id=""
               onChange={(e) => dispatch(updateCustId(e.target.value))}
+              required
             >
               <option value="choose here">Choose here</option>
               <option value="cust001">zakawa</option>
@@ -99,6 +110,7 @@ const Sales = () => {
               className="bg-transparent cursor-pointer hover:border date"
               id=""
               onChange={(e) => dispatch(updateDate(e.target.value))}
+              required
             />
           </div>
         </div>
@@ -120,7 +132,7 @@ const Sales = () => {
               </tr>
             </thead>
             <tbody>
-              {currentItems.map((it, index) => (
+              {currentItems?.map((it, index) => (
                 <tr key={it.id}>
                   <td
                     className="Tbody flex gap-2 items-center"
@@ -135,7 +147,11 @@ const Sales = () => {
                       <FaRegTimesCircle
                         onClick={(e) =>
                           dispatch(
-                            removeRow({ keyward: "Backspace", id: it.id })
+                            removeRow({
+                              keyward: "Backspace",
+                              id: it.id,
+                              val: "",
+                            })
                           )
                         }
                         className="text-red-600 cursor-pointer  duration-500 times"
@@ -145,7 +161,9 @@ const Sales = () => {
                   </td>
                   <td className="Tbody">
                     <input
+                      autoComplete="off"
                       itemID={it.id}
+                      required
                       onChange={(e) =>
                         dispatch(
                           updateItemName({
@@ -155,14 +173,26 @@ const Sales = () => {
                         )
                       }
                       onKeyDown={(e) =>
-                        dispatch(removeRow({ keyward: e.key, id: it.id }))
+                        dispatch(
+                          removeRow({
+                            keyward: e.key,
+                            id: it.id,
+                            val: e.target.value,
+                          })
+                        )
                       }
                       type="text"
                       className="Input item"
                       name="item"
                       id=""
+                      list="browser"
                       value={it.item}
                     />
+                    <datalist id="browser">
+                      {items.map((item) => (
+                        <option value={item.name}>{item.name}</option>
+                      ))}
+                    </datalist>
                   </td>
                   <td className="Tbody">
                     <input
@@ -174,12 +204,14 @@ const Sales = () => {
                       onChange={(e) =>
                         calculatinAmountUpdateQty(e.target.value, it.id)
                       }
+                      required
                       value={it.qty}
                     />
                   </td>
                   <td className="Tbody">
                     <input
                       itemID={it.id}
+                      required
                       type="text"
                       className="Input price"
                       id=""
@@ -191,6 +223,7 @@ const Sales = () => {
                   <td className="Tbody">
                     <input
                       // itemID={it.id}
+                      required
                       type="text"
                       className="Input amount"
                       value={it.amount}
@@ -234,6 +267,7 @@ const Sales = () => {
                     className="Input discount"
                     id=""
                     value={discount}
+                    required
                   />
                 </td>
               </tr>
@@ -253,6 +287,9 @@ const Sales = () => {
               </tr>
             </tfoot>
           </table>
+          <button type="submit" className="btn bg-yellow-400 float-right">
+            Save
+          </button>
         </div>
       </form>
     </div>

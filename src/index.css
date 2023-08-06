@@ -13,3 +13,6 @@
 .Input {
   @apply w-full bg-transparent outline-none;
 }
+.btn {
+  @apply rounded-md font-robo py-2 px-4 my-2;
+}

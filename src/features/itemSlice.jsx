@@ -1,4 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../firebase/firebase";
 const generateId = () => {
   return Math.floor(Math.random() * 10000000);
 };
@@ -97,10 +99,28 @@ const itemSlice = createSlice({
         (i) => i.id == action.payload.id
       );
       if (action.payload.keyward == "Backspace" && currentRow != 0) {
-        state.currentItems.splice(currentRow, 1);
+        if (action.payload.val.length == 0) {
+          state.currentItems.splice(currentRow, 1);
+        }
       } else {
         return;
       }
+    },
+    //Add to FireBase
+    addToDb: (state) => {
+      const goDb = async () => {
+        try {
+          const invoiceCollection = collection(db, "invoices");
+          await addDoc(invoiceCollection, state);
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      goDb();
+      state.currentItems = [];
+      state.currentItems = initialState.currentItems;
+
+      console.log(state.currentItems);
     },
   },
 });
@@ -118,4 +138,5 @@ export const {
   removeRow,
   updateCustId,
   updateDate,
+  addToDb,
 } = itemSlice.actions;
