@@ -6,7 +6,7 @@ import { MdInventory } from "react-icons/md";
 import { FcSalesPerformance } from "react-icons/fc";
 const Sidebar = () => {
   return (
-    <div className="bg-green-300 px-3 h-full col-span-1">
+    <div className="bg-green-300 px-3 h-screen col-span-1">
       <Link to="/" className="flex items-center pb-2">
         <img src={logo} alt="" className="w-16" />
         <span className="text-yellow-500 font-robo text-2xl">

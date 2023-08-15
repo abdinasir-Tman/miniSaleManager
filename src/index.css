@@ -16,3 +16,6 @@
 .btn {
   @apply rounded-md font-robo py-2 px-4 my-2;
 }
+.formInput {
+  @apply border-b text-2xl bg-gray-200 px-2 py-2 w-full rounded-md;
+}
