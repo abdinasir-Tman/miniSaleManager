@@ -1,19 +1,24 @@
-import React, { useRef } from "react";
+import React, { useContext, useRef, useState } from "react";
 import Modal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
 import {
   registerCustomer,
   setModal,
   updateCompany,
+  updateCustomer,
   updateName,
   updatePhone,
 } from "../features/customerSlice";
-import { ToastContainer, toast } from "react-toastify";
-import { fetchData } from "./pages/Customer";
+import toast, { Toaster } from "react-hot-toast";
+import { CustomerContext } from "../App";
+// import { fetchData } from "./pages/Customer";
 const CustomerModal = () => {
   let subtitle;
-  const { currentCustomer, IsModal } = useSelector((store) => store.customers);
+  const { currentCustomer, IsModal, IsUpdate } = useSelector(
+    (store) => store.customers
+  );
   const dispatch = useDispatch();
+
   function openModal() {
     dispatch(setModal(true));
   }
@@ -27,13 +32,22 @@ const CustomerModal = () => {
     dispatch(setModal(false));
   }
   const formRef = useRef();
+  const { fetchData } = useContext(CustomerContext);
   //register Customer
   const registerationCustomer = (e) => {
     e.preventDefault();
-    dispatch(registerCustomer());
-    fetchData();
-    formRef.current.reset();
-    toast.success("Registered Successfully");
+    if (IsUpdate) {
+      dispatch(updateCustomer());
+      formRef.current.reset();
+      toast.success("Updated Successfully");
+      fetchData();
+      dispatch(setModal(false));
+    } else {
+      dispatch(registerCustomer());
+      formRef.current.reset();
+      toast.success("Registered Successfully");
+      dispatch(setModal(false));
+    }
   };
   return (
     <div>
@@ -108,8 +122,8 @@ const CustomerModal = () => {
             Save{" "}
           </button>
         </form>
-        <ToastContainer />
       </Modal>
+      <Toaster />
     </div>
   );
 };
