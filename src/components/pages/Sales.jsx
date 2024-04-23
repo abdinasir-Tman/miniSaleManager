@@ -1,10 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FaRegTimesCircle } from "react-icons/fa";
+import toast, { Toaster } from "react-hot-toast";
 import {
-  updateItemName,
-  updateItemPrice,
-  updateItemQty,
   calculateAmount,
   getSubtotal,
   makeDiscount,
@@ -14,6 +12,7 @@ import {
   updateCustId,
   updateDate,
   addToDb,
+  updateItemInfo,
 } from "../../features/itemSlice";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
@@ -64,26 +63,26 @@ const Sales = () => {
       })
     );
   };
-  // calculating amount and updating Qty
-  const calculatinAmountUpdateQty = (qty, id) => {
-    dispatch(
-      updateItemQty({
-        id: id,
-        qty,
-      })
-    );
+
+  //form ref and submit
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(addToDb());
+    formRef.current.reset();
+    toast.success("Successfully Registered");
+  };
+
+  const handleChange = (event, id) => {
+    const { name, value } = event.target;
+
+    dispatch(updateItemInfo({ name: name, value: value, id: id }));
     dispatch(
       calculateAmount({
         id,
       })
     );
   };
-  //form ref and submit
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    dispatch(addToDb());
-    formRef.current.reset();
-  };
+
   return (
     <div className="px-2">
       <h1 className="text-center text-xl mt-2">Invoice</h1>
@@ -133,7 +132,7 @@ const Sales = () => {
             </thead>
             <tbody>
               {currentItems?.map((it, index) => (
-                <tr key={it.id}>
+                <tr key={index}>
                   <td
                     className="Tbody flex gap-2 items-center"
                     onMouseOver={(e) =>
@@ -164,14 +163,15 @@ const Sales = () => {
                       autoComplete="off"
                       itemID={it.id}
                       required
-                      onChange={(e) =>
-                        dispatch(
-                          updateItemName({
-                            id: it.id,
-                            item: e.target.value,
-                          })
-                        )
-                      }
+                      onChange={(event) => handleChange(event, it.id)}
+                      // onChange={(e) =>
+                      //   dispatch(
+                      //     updateItemName({
+                      //       id: it.id,
+                      //       item: e.target.value,
+                      //     })
+                      //   )
+                      // }
                       onKeyDown={(e) =>
                         dispatch(
                           removeRow({
@@ -189,8 +189,10 @@ const Sales = () => {
                       value={it.item}
                     />
                     <datalist id="browser">
-                      {items.map((item) => (
-                        <option value={item.name}>{item.name}</option>
+                      {items.map((item, i) => (
+                        <option key={i} value={item.name}>
+                          {item.name}
+                        </option>
                       ))}
                     </datalist>
                   </td>
@@ -201,9 +203,7 @@ const Sales = () => {
                       className="Input qty"
                       id=""
                       name="qty"
-                      onChange={(e) =>
-                        calculatinAmountUpdateQty(e.target.value, it.id)
-                      }
+                      onChange={(event) => handleChange(event, it.id)}
                       required
                       value={it.qty}
                     />
@@ -216,7 +216,7 @@ const Sales = () => {
                       className="Input price"
                       id=""
                       name="price"
-                      onChange={(e) => calculateItem(e.target.value, it.id)}
+                      onChange={(event) => handleChange(event, it.id)}
                       value={it.price}
                     />
                   </td>
@@ -292,6 +292,7 @@ const Sales = () => {
           </button>
         </div>
       </form>
+      <Toaster />
     </div>
   );
 };

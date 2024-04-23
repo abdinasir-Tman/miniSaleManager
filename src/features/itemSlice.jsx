@@ -26,26 +26,24 @@ const itemSlice = createSlice({
   initialState,
   reducers: {
     //update Item name
-    updateItemName: (state, action) => {
-      const gotItem = state.currentItems.find(
+
+    updateItemInfo: (state, action) => {
+      const data = current(state);
+      const itemIndex = data.currentItems.findIndex(
         (item) => item.id == action.payload.id
       );
-      gotItem.item = action.payload.item;
+
+      if (itemIndex !== -1) {
+        state.currentItems[itemIndex][action.payload.name] =
+          action.payload.value;
+      }
+      calculateAmount();
+      // gotItem.item = action.payload.item;
     },
     //update Item Price
-    updateItemPrice: (state, action) => {
-      const gotItem = state.currentItems.find(
-        (item) => item.id == action.payload.id
-      );
-      gotItem.price = action.payload.price;
-    },
+
     //udpate item qty
-    updateItemQty: (state, action) => {
-      const gotItem = state.currentItems.find(
-        (item) => item.id == action.payload.id
-      );
-      gotItem.qty = action.payload.qty;
-    },
+
     //udpate custId
     updateCustId: (state, action) => {
       state.custId = action.payload;
@@ -127,9 +125,6 @@ const itemSlice = createSlice({
 
 export default itemSlice.reducer;
 export const {
-  updateItemName,
-  updateItemPrice,
-  updateItemQty,
   calculateAmount,
   getSubtotal,
   MainTotal,
@@ -139,4 +134,5 @@ export const {
   updateCustId,
   updateDate,
   addToDb,
+  updateItemInfo,
 } = itemSlice.actions;
